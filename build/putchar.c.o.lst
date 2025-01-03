@@ -1,0 +1,130 @@
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"putchar.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "putchar.c"
+  20              		.section	.text._putchar,"ax",%progbits
+  21              		.align	1
+  22              		.p2align 2,,3
+  23              		.global	_putchar
+  24              		.syntax unified
+  25              		.thumb
+  26              		.thumb_func
+  28              	_putchar:
+  29              	.LVL0:
+  30              	.LFB135:
+   1:putchar.c     **** #include <stdint.h>
+   2:putchar.c     **** #include <nrf.h>
+   3:putchar.c     **** 
+   4:putchar.c     **** // This function is called internally by the printf function for each character.
+   5:putchar.c     **** // Here we can redirect the printf output stream to whereever we want.
+   6:putchar.c     **** void _putchar(char character)
+   7:putchar.c     **** {
+  31              		.loc 1 7 1 view -0
+  32              		.cfi_startproc
+  33              		@ args = 0, pretend = 0, frame = 0
+  34              		@ frame_needed = 0, uses_anonymous_args = 0
+  35              		@ link register save eliminated.
+   8:putchar.c     ****     // Enable the UART peripheral.
+   9:putchar.c     ****     NRF_UART0->ENABLE = UART_ENABLE_ENABLE_Enabled << UART_ENABLE_ENABLE_Pos;
+  36              		.loc 1 9 5 view .LVU1
+  37              		.loc 1 9 23 is_stmt 0 view .LVU2
+  38 0000 094A     		ldr	r2, .L6
+  39 0002 0421     		movs	r1, #4
+  10:putchar.c     ****     // Write the character into the TXD register.
+  11:putchar.c     ****     NRF_UART0->TXD = character;
+  12:putchar.c     ****     // Start the UART transfer (i.e., trigger the UART start task).
+  13:putchar.c     ****     NRF_UART0->TASKS_STARTTX = UART_TASKS_STARTTX_TASKS_STARTTX_Trigger << UART_TASKS_STARTTX_TASKS
+  40              		.loc 1 13 30 view .LVU3
+  41 0004 0123     		movs	r3, #1
+   9:putchar.c     ****     // Write the character into the TXD register.
+  42              		.loc 1 9 23 view .LVU4
+  43 0006 C2F80015 		str	r1, [r2, #1280]
+  11:putchar.c     ****     // Start the UART transfer (i.e., trigger the UART start task).
+  44              		.loc 1 11 5 is_stmt 1 view .LVU5
+  11:putchar.c     ****     // Start the UART transfer (i.e., trigger the UART start task).
+  45              		.loc 1 11 20 is_stmt 0 view .LVU6
+  46 000a C2F81C05 		str	r0, [r2, #1308]
+  47              		.loc 1 13 5 is_stmt 1 view .LVU7
+  48              		.loc 1 13 30 is_stmt 0 view .LVU8
+  49 000e 9360     		str	r3, [r2, #8]
+  14:putchar.c     **** 
+  15:putchar.c     ****     // Wait until the end of the transmission by checking the TXRDY event.
+  16:putchar.c     ****     while (NRF_UART0->EVENTS_TXDRDY == UART_EVENTS_TXDRDY_EVENTS_TXDRDY_NotGenerated);
+  50              		.loc 1 16 5 is_stmt 1 view .LVU9
+  51              	.L2:
+  52              		.loc 1 16 37 discriminator 1 view .LVU10
+  53              		.loc 1 16 21 is_stmt 0 discriminator 1 view .LVU11
+  54 0010 D2F81C31 		ldr	r3, [r2, #284]
+  55              		.loc 1 16 37 discriminator 1 view .LVU12
+  56 0014 002B     		cmp	r3, #0
+  57 0016 FBD0     		beq	.L2
+  17:putchar.c     **** 
+  18:putchar.c     ****     // Reset the event.
+  19:putchar.c     ****     NRF_UART0->EVENTS_TXDRDY = UART_EVENTS_TXDRDY_EVENTS_TXDRDY_NotGenerated << UART_EVENTS_TXDRDY_
+  58              		.loc 1 19 5 is_stmt 1 view .LVU13
+  59              		.loc 1 19 30 is_stmt 0 view .LVU14
+  60 0018 0023     		movs	r3, #0
+  20:putchar.c     ****     // Stop the transmission by triggering the stop task.
+  21:putchar.c     ****     NRF_UART0->TASKS_STOPTX = UART_TASKS_STOPTX_TASKS_STOPTX_Trigger << UART_TASKS_STOPTX_TASKS_STO
+  61              		.loc 1 21 29 view .LVU15
+  62 001a 0121     		movs	r1, #1
+  19:putchar.c     ****     // Stop the transmission by triggering the stop task.
+  63              		.loc 1 19 30 view .LVU16
+  64 001c C2F81C31 		str	r3, [r2, #284]
+  65              		.loc 1 21 5 is_stmt 1 view .LVU17
+  66              		.loc 1 21 29 is_stmt 0 view .LVU18
+  67 0020 D160     		str	r1, [r2, #12]
+  22:putchar.c     ****     // Disable the UART peripheral.
+  23:putchar.c     ****     NRF_UART0->ENABLE = UART_ENABLE_ENABLE_Disabled << UART_ENABLE_ENABLE_Pos;
+  68              		.loc 1 23 5 is_stmt 1 view .LVU19
+  69              		.loc 1 23 23 is_stmt 0 view .LVU20
+  70 0022 C2F80035 		str	r3, [r2, #1280]
+  24:putchar.c     **** }...
+  71              		.loc 1 24 1 view .LVU21
+  72 0026 7047     		bx	lr
+  73              	.L7:
+  74              		.align	2
+  75              	.L6:
+  76 0028 00200040 		.word	1073750016
+  77              		.cfi_endproc
+  78              	.LFE135:
+  80              		.text
+  81              	.Letext0:
+  82              		.file 2 "./Include/nrf52840.h"
+  83              		.file 3 "/usr/lib/gcc/arm-none-eabi/13.2.1/include/stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 putchar.c
+     /tmp/ccp3BKWr.s:21     .text._putchar:00000000 $t
+     /tmp/ccp3BKWr.s:28     .text._putchar:00000000 _putchar
+     /tmp/ccp3BKWr.s:76     .text._putchar:00000028 $d
+                           .group:00000000 wm4.0.6f27a92f71ef72f43351aaf5909357e4
+                           .group:00000000 wm4.stdint.h.29.6d480f4ba0f60596e88234283d42444f
+                           .group:00000000 wm4.nrf.h.36.2c9771b922e05998cb98cd38e577d26d
+                           .group:00000000 wm4.nrf52840.h.54.2eff2f64e4f718309725743e020c1c3e
+                           .group:00000000 wm4.cmsis_version.h.32.0ac195c83bb4537824e6ad1c47474b79
+                           .group:00000000 wm4.core_cm4.h.66.d954c01095d518cd043caf62225efced
+                           .group:00000000 wm4.cmsis_gcc.h.26.ec732d7dec3e44b4b15b499f7fbfba3f
+                           .group:00000000 wm4.core_cm4.h.186.369ba2229bf6f92b71e2ad1ae8388018
+                           .group:00000000 wm4.mpu_armv7.h.32.83326921a797fa9d6f70449916b4b839
+                           .group:00000000 wm4.nrf52840.h.2760.94facbe4f0b1a63284aed08b8635f538
+                           .group:00000000 wm4.nrf52840_bitfields.h.36.6f0372e47edb7eb297e4f285382d0a6c
+                           .group:00000000 wm4.nrf51_to_nrf52840.h.36.a52984f77ed625f80506d6aa3574a54b
+                           .group:00000000 wm4.nrf52_to_nrf52840.h.36.718b4211de2aa9d86eb1b548550c2d83
+                           .group:00000000 wm4.compiler_abstraction.h.36.11adf2fa28a4f329a07fa847d09bfcb7
+
+NO UNDEFINED SYMBOLS

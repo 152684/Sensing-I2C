@@ -1,0 +1,538 @@
+   1              	# 0 "gcc_startup_nrf52840.S"
+   2              	# 1 "/lab4//"
+   1              	...
+   0              	
+   0              	
+   1              	/*
+   2              	 
+   3              	Copyright (c) 2009-2024 ARM Limited. All rights reserved.
+   4              	
+   5              	    SPDX-License-Identifier: Apache-2.0
+   6              	
+   7              	Licensed under the Apache License, Version 2.0 (the License); you may
+   8              	not use this file except in compliance with the License.
+   9              	You may obtain a copy of the License at
+  10              	
+  11              	    www.apache.org/licenses/LICENSE-2.0
+  12              	
+  13              	Unless required by applicable law or agreed to in writing, software
+  14              	distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  15              	WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  16              	See the License for the specific language governing permissions and
+  17              	limitations under the License.
+  18              	
+  19              	NOTICE: This file has been modified by Nordic Semiconductor ASA.
+  20              	
+  21              	*/
+  22              	
+  23              	    .syntax unified
+  24              	    .arch armv7e-m
+  25              	
+  26              	#ifdef __STARTUP_CONFIG
+  27              	#include "startup_config.h"
+  28              	#ifndef __STARTUP_CONFIG_STACK_ALIGNEMENT
+  29              	#define __STARTUP_CONFIG_STACK_ALIGNEMENT 3
+  30              	#endif
+  31              	#endif
+  32              	
+  33              	    .section .stack
+  34              	#if defined(__STARTUP_CONFIG)
+  35              	    .align __STARTUP_CONFIG_STACK_ALIGNEMENT
+  36              	    .equ    Stack_Size, __STARTUP_CONFIG_STACK_SIZE
+  37              	#elif defined(__STACK_SIZE)
+  38              	    .align 3
+  39              	    .equ    Stack_Size, __STACK_SIZE
+  40              	#else
+  41              	    .align 3
+  42              	    .equ    Stack_Size, 16384
+  43              	#endif
+  44              	    .globl __StackTop
+  45              	    .globl __StackLimit
+  46              	__StackLimit:
+  47 0000 00000000 	    .space Stack_Size
+  47      00000000 
+  47      00000000 
+  47      00000000 
+  47      00000000 
+  49              	__StackTop:
+  51              	
+  52              	    .section .heap
+  53              	    .align 3
+  54              	#if defined(__STARTUP_CONFIG)
+  55              	    .equ Heap_Size, __STARTUP_CONFIG_HEAP_SIZE
+  56              	#elif defined(__HEAP_SIZE)
+  57              	    .equ Heap_Size, __HEAP_SIZE
+  58              	#else
+  59              	    .equ Heap_Size, 16384
+  60              	#endif
+  61              	    .globl __HeapBase
+  62              	    .globl __HeapLimit
+  63              	__HeapBase:
+  64              	    .if Heap_Size
+  65 0000 00000000 	    .space Heap_Size
+  65      00000000 
+  65      00000000 
+  65      00000000 
+  65      00000000 
+  66              	    .endif
+  68              	__HeapLimit:
+  70              	
+  71              	    .section .isr_vector, "ax"
+  72              	    .align 2
+  73              	    .globl __isr_vector
+  74              	__isr_vector:
+  75 0000 00000000 	    .long   __StackTop                  /* Top of Stack */
+  76 0004 00000000 	    .long   Reset_Handler
+  77 0008 00000000 	    .long   NMI_Handler
+  78 000c 00000000 	    .long   HardFault_Handler
+  79 0010 00000000 	    .long   MemoryManagement_Handler
+  80 0014 00000000 	    .long   BusFault_Handler
+  81 0018 00000000 	    .long   UsageFault_Handler
+  82 001c 00000000 	    .long   0                           /*Reserved */
+  83 0020 00000000 	    .long   0                           /*Reserved */
+  84 0024 00000000 	    .long   0                           /*Reserved */
+  85 0028 00000000 	    .long   0                           /*Reserved */
+  86 002c 00000000 	    .long   SVC_Handler
+  87 0030 00000000 	    .long   DebugMon_Handler
+  88 0034 00000000 	    .long   0                           /*Reserved */
+  89 0038 00000000 	    .long   PendSV_Handler
+  90 003c 00000000 	    .long   SysTick_Handler
+  91              	
+  92              	  /* External Interrupts */
+  93 0040 00000000 	    .long   POWER_CLOCK_IRQHandler
+  94 0044 00000000 	    .long   RADIO_IRQHandler
+  95 0048 00000000 	    .long   UARTE0_UART0_IRQHandler
+  96 004c 00000000 	    .long   SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler
+  97 0050 00000000 	    .long   SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQHandler
+  98 0054 00000000 	    .long   NFCT_IRQHandler
+  99 0058 00000000 	    .long   GPIOTE_IRQHandler
+ 100 005c 00000000 	    .long   SAADC_IRQHandler
+ 101 0060 00000000 	    .long   TIMER0_IRQHandler
+ 102 0064 00000000 	    .long   TIMER1_IRQHandler
+ 103 0068 00000000 	    .long   TIMER2_IRQHandler
+ 104 006c 00000000 	    .long   RTC0_IRQHandler
+ 105 0070 00000000 	    .long   TEMP_IRQHandler
+ 106 0074 00000000 	    .long   RNG_IRQHandler
+ 107 0078 00000000 	    .long   ECB_IRQHandler
+ 108 007c 00000000 	    .long   CCM_AAR_IRQHandler
+ 109 0080 00000000 	    .long   WDT_IRQHandler
+ 110 0084 00000000 	    .long   RTC1_IRQHandler
+ 111 0088 00000000 	    .long   QDEC_IRQHandler
+ 112 008c 00000000 	    .long   COMP_LPCOMP_IRQHandler
+ 113 0090 00000000 	    .long   SWI0_EGU0_IRQHandler
+ 114 0094 00000000 	    .long   SWI1_EGU1_IRQHandler
+ 115 0098 00000000 	    .long   SWI2_EGU2_IRQHandler
+ 116 009c 00000000 	    .long   SWI3_EGU3_IRQHandler
+ 117 00a0 00000000 	    .long   SWI4_EGU4_IRQHandler
+ 118 00a4 00000000 	    .long   SWI5_EGU5_IRQHandler
+ 119 00a8 00000000 	    .long   TIMER3_IRQHandler
+ 120 00ac 00000000 	    .long   TIMER4_IRQHandler
+ 121 00b0 00000000 	    .long   PWM0_IRQHandler
+ 122 00b4 00000000 	    .long   PDM_IRQHandler
+ 123 00b8 00000000 	    .long   0                           /*Reserved */
+ 124 00bc 00000000 	    .long   0                           /*Reserved */
+ 125 00c0 00000000 	    .long   MWU_IRQHandler
+ 126 00c4 00000000 	    .long   PWM1_IRQHandler
+ 127 00c8 00000000 	    .long   PWM2_IRQHandler
+ 128 00cc 00000000 	    .long   SPIM2_SPIS2_SPI2_IRQHandler
+ 129 00d0 00000000 	    .long   RTC2_IRQHandler
+ 130 00d4 00000000 	    .long   I2S_IRQHandler
+ 131 00d8 00000000 	    .long   FPU_IRQHandler
+ 132 00dc 00000000 	    .long   USBD_IRQHandler
+ 133 00e0 00000000 	    .long   UARTE1_IRQHandler
+ 134 00e4 00000000 	    .long   QSPI_IRQHandler
+ 135 00e8 00000000 	    .long   CRYPTOCELL_IRQHandler
+ 136 00ec 00000000 	    .long   0                           /*Reserved */
+ 137 00f0 00000000 	    .long   0                           /*Reserved */
+ 138 00f4 00000000 	    .long   PWM3_IRQHandler
+ 139 00f8 00000000 	    .long   0                           /*Reserved */
+ 140 00fc 00000000 	    .long   SPIM3_IRQHandler
+ 141 0100 00000000 	    .long   0                           /*Reserved */
+ 142 0104 00000000 	    .long   0                           /*Reserved */
+ 143 0108 00000000 	    .long   0                           /*Reserved */
+ 144 010c 00000000 	    .long   0                           /*Reserved */
+ 145 0110 00000000 	    .long   0                           /*Reserved */
+ 146 0114 00000000 	    .long   0                           /*Reserved */
+ 147 0118 00000000 	    .long   0                           /*Reserved */
+ 148 011c 00000000 	    .long   0                           /*Reserved */
+ 149 0120 00000000 	    .long   0                           /*Reserved */
+ 150 0124 00000000 	    .long   0                           /*Reserved */
+ 151 0128 00000000 	    .long   0                           /*Reserved */
+ 152 012c 00000000 	    .long   0                           /*Reserved */
+ 153 0130 00000000 	    .long   0                           /*Reserved */
+ 154 0134 00000000 	    .long   0                           /*Reserved */
+ 155 0138 00000000 	    .long   0                           /*Reserved */
+ 156 013c 00000000 	    .long   0                           /*Reserved */
+ 157 0140 00000000 	    .long   0                           /*Reserved */
+ 158 0144 00000000 	    .long   0                           /*Reserved */
+ 159 0148 00000000 	    .long   0                           /*Reserved */
+ 160 014c 00000000 	    .long   0                           /*Reserved */
+ 161 0150 00000000 	    .long   0                           /*Reserved */
+ 162 0154 00000000 	    .long   0                           /*Reserved */
+ 163 0158 00000000 	    .long   0                           /*Reserved */
+ 164 015c 00000000 	    .long   0                           /*Reserved */
+ 165 0160 00000000 	    .long   0                           /*Reserved */
+ 166 0164 00000000 	    .long   0                           /*Reserved */
+ 167 0168 00000000 	    .long   0                           /*Reserved */
+ 168 016c 00000000 	    .long   0                           /*Reserved */
+ 169 0170 00000000 	    .long   0                           /*Reserved */
+ 170 0174 00000000 	    .long   0                           /*Reserved */
+ 171 0178 00000000 	    .long   0                           /*Reserved */
+ 172 017c 00000000 	    .long   0                           /*Reserved */
+ 173 0180 00000000 	    .long   0                           /*Reserved */
+ 174 0184 00000000 	    .long   0                           /*Reserved */
+ 175 0188 00000000 	    .long   0                           /*Reserved */
+ 176 018c 00000000 	    .long   0                           /*Reserved */
+ 177 0190 00000000 	    .long   0                           /*Reserved */
+ 178 0194 00000000 	    .long   0                           /*Reserved */
+ 179 0198 00000000 	    .long   0                           /*Reserved */
+ 180 019c 00000000 	    .long   0                           /*Reserved */
+ 181 01a0 00000000 	    .long   0                           /*Reserved */
+ 182 01a4 00000000 	    .long   0                           /*Reserved */
+ 183 01a8 00000000 	    .long   0                           /*Reserved */
+ 184 01ac 00000000 	    .long   0                           /*Reserved */
+ 185 01b0 00000000 	    .long   0                           /*Reserved */
+ 186 01b4 00000000 	    .long   0                           /*Reserved */
+ 187 01b8 00000000 	    .long   0                           /*Reserved */
+ 188 01bc 00000000 	    .long   0                           /*Reserved */
+ 189 01c0 00000000 	    .long   0                           /*Reserved */
+ 190 01c4 00000000 	    .long   0                           /*Reserved */
+ 191 01c8 00000000 	    .long   0                           /*Reserved */
+ 192 01cc 00000000 	    .long   0                           /*Reserved */
+ 193 01d0 00000000 	    .long   0                           /*Reserved */
+ 194 01d4 00000000 	    .long   0                           /*Reserved */
+ 195 01d8 00000000 	    .long   0                           /*Reserved */
+ 196 01dc 00000000 	    .long   0                           /*Reserved */
+ 197 01e0 00000000 	    .long   0                           /*Reserved */
+ 198 01e4 00000000 	    .long   0                           /*Reserved */
+ 199 01e8 00000000 	    .long   0                           /*Reserved */
+ 200 01ec 00000000 	    .long   0                           /*Reserved */
+ 201 01f0 00000000 	    .long   0                           /*Reserved */
+ 202 01f4 00000000 	    .long   0                           /*Reserved */
+ 203 01f8 00000000 	    .long   0                           /*Reserved */
+ 204 01fc 00000000 	    .long   0                           /*Reserved */
+ 205              	
+ 207              	
+ 208              	/* Reset Handler */
+ 209              	
+ 210              	
+ 211              	    .text
+ 212              	    .thumb
+ 213              	    .thumb_func
+ 214              	    .align 1
+ 215              	    .globl Reset_Handler
+ 217              	Reset_Handler:
+ 218              	
+ 219              	
+ 220              	/* Loop to copy data from read only memory to RAM.
+ 221              	 * The ranges of copy from/to are specified by following symbols:
+ 222              	 *      __etext: LMA of start of the section to copy from. Usually end of text
+ 223              	 *      __data_start: VMA of start of the section to copy to.
+ 224              	 *      __data_end: VMA of end of the section to copy to. 
+ 225              	 *
+ 226              	 * All addresses must be aligned to 4 bytes boundary.
+ 227              	 */
+ 228              	#ifndef __STARTUP_SKIP_ETEXT
+ 229              	
+ 230              	/* Load .data */
+ 231 0000 0F49     	    ldr r1, =__data_start
+ 232 0002 104A     	    ldr r2, =__data_end
+ 233 0004 104B     	    ldr r3, =__data_load_start
+ 234 0006 00F010F8 	    bl copy_region
+ 235              	
+ 236              	/* Load .sdata */
+ 237 000a 1049     	    ldr r1, =__sdata_start
+ 238 000c 104A     	    ldr r2, =__sdata_end
+ 239 000e 114B     	    ldr r3, =__sdata_load_start
+ 240 0010 00F00BF8 	    bl copy_region
+ 241              	
+ 242              	/* Load .tdata */
+ 243 0014 1049     	    ldr r1, =__tdata_start
+ 244 0016 114A     	    ldr r2, =__tdata_end
+ 245 0018 114B     	    ldr r3, =__tdata_load_start
+ 246 001a 00F006F8 	    bl copy_region
+ 247              	
+ 248              	/* Load .fast */
+ 249 001e 1149     	    ldr r1, =__fast_start
+ 250 0020 114A     	    ldr r2, =__fast_end
+ 251 0022 124B     	    ldr r3, =__fast_load_start
+ 252 0024 00F001F8 	    bl copy_region
+ 253              	
+ 254 0028 06E0     	    b copy_etext_done
+ 255              	
+ 256              	/* Method that loads data from nvm to ram */
+ 257              	copy_region:
+ 258 002a 521A     	    subs r2, r2, r1
+ 259 002c 03DD     	    ble L_copy_region_done
+ 260              	
+ 261              	L_copy_region:
+ 262 002e 043A     	    subs r2, r2, #4
+ 263 0030 9858     	    ldr r0, [r3,r2]
+ 264 0032 8850     	    str r0, [r1,r2]
+ 265 0034 FBDC     	    bgt L_copy_region
+ 266              	
+ 267              	L_copy_region_done:
+ 268              	
+ 269 0036 7047     	    bx lr
+ 270              	
+ 271              	copy_etext_done:
+ 272              	
+ 273              	
+ 274              	#endif
+ 275              	
+ 276              	/* This part of work usually is done in C library startup code. Otherwise,
+ 277              	 * define __STARTUP_CLEAR_BSS to enable it in this startup. This section
+ 278              	 * clears the RAM where BSS data is located.
+ 279              	 *
+ 280              	 * The BSS section is specified by following symbols
+ 281              	 *    __bss_start__: start of the BSS section.
+ 282              	 *    __bss_end__: end of the BSS section.
+ 283              	 *
+ 284              	 * All addresses must be aligned to 4 bytes boundary.
+ 285              	 */
+ 286              	#ifdef __STARTUP_CLEAR_BSS
+ 287              	    ldr r1, =__bss_start__
+ 288              	    ldr r2, =__bss_end__
+ 289              	    bl clear_region
+ 290              	
+ 291              	    ldr r1, =__tbss_start__
+ 292              	    ldr r2, =__tbss_end__
+ 293              	    bl clear_region
+ 294              	
+ 295              	    ldr r1, =__sbss_start__
+ 296              	    ldr r2, =__sbss_end__
+ 297              	    bl clear_region
+ 298              	
+ 299              	    b clear_bss_done
+ 300              	
+ 301              	/* Method that clears default-0 registers */
+ 302              	clear_region:
+ 303              	    movs r0, 0
+ 304              	
+ 305              	    subs r2, r2, r1
+ 306              	    ble .L_clear_region_done
+ 307              	
+ 308              	.L_clear_region:
+ 309              	    subs r2, r2, #4
+ 310              	    str r0, [r1, r2]
+ 311              	    bgt .L_clear_region
+ 312              	
+ 313              	.L_clear_region_done:
+ 314              	
+ 315              	    bx lr
+ 316              	
+ 317              	clear_bss_done:
+ 318              	
+ 319              	#endif /* __STARTUP_CLEAR_BSS */
+ 320              	
+ 321              	/* Execute SystemInit function. */
+ 322 0038 FFF7FEFF 	    bl SystemInit
+ 323              	
+ 324              	/* Call _start function provided by libraries.
+ 325              	 * If those libraries are not accessible, define __START as your entry point.
+ 326              	 */
+ 327              	#ifndef __START
+ 328              	#define __START _start
+ 329              	#endif
+ 330 003c FFF7FEFF 	    bl __START
+ 331              	
+ 332 0040 00000000 	    .pool
+ 332      00000000 
+ 332      00000000 
+ 332      00000000 
+ 332      00000000 
+ 334              	
+ 335              	    .section ".text"
+ 336              	
+ 337              	
+ 338              	/* Dummy Exception Handlers (infinite loops which can be modified) */
+ 339              	
+ 340              	    .weak   NMI_Handler
+ 342              	NMI_Handler:
+ 343 0070 FEE7     	    b       .
+ 345              	
+ 346              	
+ 347              	    .weak   HardFault_Handler
+ 349              	HardFault_Handler:
+ 350 0072 FEE7     	    b       .
+ 352              	
+ 353              	
+ 354              	    .weak   MemoryManagement_Handler
+ 356              	MemoryManagement_Handler:
+ 357 0074 FEE7     	    b       .
+ 359              	
+ 360              	
+ 361              	    .weak   BusFault_Handler
+ 363              	BusFault_Handler:
+ 364 0076 FEE7     	    b       .
+ 366              	
+ 367              	
+ 368              	    .weak   UsageFault_Handler
+ 370              	UsageFault_Handler:
+ 371 0078 FEE7     	    b       .
+ 373              	
+ 374              	
+ 375              	    .weak   SVC_Handler
+ 377              	SVC_Handler:
+ 378 007a FEE7     	    b       .
+ 380              	
+ 381              	
+ 382              	    .weak   DebugMon_Handler
+ 384              	DebugMon_Handler:
+ 385 007c FEE7     	    b       .
+ 387              	
+ 388              	
+ 389              	    .weak   PendSV_Handler
+ 391              	PendSV_Handler:
+ 392 007e FEE7     	    b       .
+ 394              	
+ 395              	
+ 396              	    .weak   SysTick_Handler
+ 398              	SysTick_Handler:
+ 399 0080 FEE7     	    b       .
+ 401              	
+ 402              	
+ 403              	/* IRQ Handlers */
+ 404              	
+ 405              	    .globl  Default_Handler
+ 407              	Default_Handler:
+ 408 0082 FEE7     	    b       .
+ 410              	
+ 411              	    .macro  IRQ handler
+ 412              	    .weak   \handler
+ 413              	    .set    \handler, Default_Handler
+ 414              	    .endm
+ 415              	
+ 416              	    IRQ  POWER_CLOCK_IRQHandler
+ 417              	    IRQ  RADIO_IRQHandler
+ 418              	    IRQ  UARTE0_UART0_IRQHandler
+ 419              	    IRQ  SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler
+ 420              	    IRQ  SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQHandler
+ 421              	    IRQ  NFCT_IRQHandler
+ 422              	    IRQ  GPIOTE_IRQHandler
+ 423              	    IRQ  SAADC_IRQHandler
+ 424              	    IRQ  TIMER0_IRQHandler
+ 425              	    IRQ  TIMER1_IRQHandler
+ 426              	    IRQ  TIMER2_IRQHandler
+ 427              	    IRQ  RTC0_IRQHandler
+ 428              	    IRQ  TEMP_IRQHandler
+ 429              	    IRQ  RNG_IRQHandler
+ 430              	    IRQ  ECB_IRQHandler
+ 431              	    IRQ  CCM_AAR_IRQHandler
+ 432              	    IRQ  WDT_IRQHandler
+ 433              	    IRQ  RTC1_IRQHandler
+ 434              	    IRQ  QDEC_IRQHandler
+ 435              	    IRQ  COMP_LPCOMP_IRQHandler
+ 436              	    IRQ  SWI0_EGU0_IRQHandler
+ 437              	    IRQ  SWI1_EGU1_IRQHandler
+ 438              	    IRQ  SWI2_EGU2_IRQHandler
+ 439              	    IRQ  SWI3_EGU3_IRQHandler
+ 440              	    IRQ  SWI4_EGU4_IRQHandler
+ 441              	    IRQ  SWI5_EGU5_IRQHandler
+ 442              	    IRQ  TIMER3_IRQHandler
+ 443              	    IRQ  TIMER4_IRQHandler
+ 444              	    IRQ  PWM0_IRQHandler
+ 445              	    IRQ  PDM_IRQHandler
+ 446              	    IRQ  MWU_IRQHandler
+ 447              	    IRQ  PWM1_IRQHandler
+ 448              	    IRQ  PWM2_IRQHandler
+ 449              	    IRQ  SPIM2_SPIS2_SPI2_IRQHandler
+ 450              	    IRQ  RTC2_IRQHandler
+ 451              	    IRQ  I2S_IRQHandler
+ 452              	    IRQ  FPU_IRQHandler
+ 453              	    IRQ  USBD_IRQHandler
+ 454              	    IRQ  UARTE1_IRQHandler
+ 455              	    IRQ  QSPI_IRQHandler
+ 456              	    IRQ  CRYPTOCELL_IRQHandler
+ 457              	    IRQ  PWM3_IRQHandler
+ 458              	    IRQ  SPIM3_IRQHandler
+ 459              	
+ 460              	  .end
+DEFINED SYMBOLS
+gcc_startup_nrf52840.S:41     .stack:00000000 $d
+gcc_startup_nrf52840.S:42     *ABS*:00004000 Stack_Size
+gcc_startup_nrf52840.S:49     .stack:00004000 __StackTop
+gcc_startup_nrf52840.S:46     .stack:00000000 __StackLimit
+gcc_startup_nrf52840.S:53     .heap:00000000 $d
+gcc_startup_nrf52840.S:59     *ABS*:00004000 Heap_Size
+gcc_startup_nrf52840.S:63     .heap:00000000 __HeapBase
+gcc_startup_nrf52840.S:68     .heap:00004000 __HeapLimit
+gcc_startup_nrf52840.S:74     .isr_vector:00000000 __isr_vector
+gcc_startup_nrf52840.S:75     .isr_vector:00000000 $d
+gcc_startup_nrf52840.S:217    .text:00000000 Reset_Handler
+gcc_startup_nrf52840.S:342    .text:00000070 NMI_Handler
+gcc_startup_nrf52840.S:349    .text:00000072 HardFault_Handler
+gcc_startup_nrf52840.S:356    .text:00000074 MemoryManagement_Handler
+gcc_startup_nrf52840.S:363    .text:00000076 BusFault_Handler
+gcc_startup_nrf52840.S:370    .text:00000078 UsageFault_Handler
+gcc_startup_nrf52840.S:377    .text:0000007a SVC_Handler
+gcc_startup_nrf52840.S:384    .text:0000007c DebugMon_Handler
+gcc_startup_nrf52840.S:391    .text:0000007e PendSV_Handler
+gcc_startup_nrf52840.S:398    .text:00000080 SysTick_Handler
+gcc_startup_nrf52840.S:407    .text:00000082 POWER_CLOCK_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 RADIO_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 UARTE0_UART0_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 NFCT_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 GPIOTE_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 SAADC_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 TIMER0_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 TIMER1_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 TIMER2_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 RTC0_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 TEMP_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 RNG_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 ECB_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 CCM_AAR_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 WDT_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 RTC1_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 QDEC_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 COMP_LPCOMP_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 SWI0_EGU0_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 SWI1_EGU1_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 SWI2_EGU2_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 SWI3_EGU3_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 SWI4_EGU4_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 SWI5_EGU5_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 TIMER3_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 TIMER4_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 PWM0_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 PDM_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 MWU_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 PWM1_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 PWM2_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 SPIM2_SPIS2_SPI2_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 RTC2_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 I2S_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 FPU_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 USBD_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 UARTE1_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 QSPI_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 CRYPTOCELL_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 PWM3_IRQHandler
+gcc_startup_nrf52840.S:407    .text:00000082 SPIM3_IRQHandler
+gcc_startup_nrf52840.S:214    .text:00000000 $t
+gcc_startup_nrf52840.S:257    .text:0000002a copy_region
+gcc_startup_nrf52840.S:271    .text:00000038 copy_etext_done
+gcc_startup_nrf52840.S:267    .text:00000036 L_copy_region_done
+gcc_startup_nrf52840.S:261    .text:0000002e L_copy_region
+gcc_startup_nrf52840.S:332    .text:00000040 $d
+gcc_startup_nrf52840.S:343    .text:00000070 $t
+gcc_startup_nrf52840.S:407    .text:00000082 Default_Handler
+
+UNDEFINED SYMBOLS
+__data_start
+__data_end
+__data_load_start
+__sdata_start
+__sdata_end
+__sdata_load_start
+__tdata_start
+__tdata_end
+__tdata_load_start
+__fast_start
+__fast_end
+__fast_load_start
+SystemInit
+_start
